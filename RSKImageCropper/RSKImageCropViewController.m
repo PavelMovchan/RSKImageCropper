@@ -65,7 +65,7 @@ static const CGFloat kLayoutImageScrollViewAnimationDuration = 0.25;
 @property (strong, nonatomic) NSLayoutConstraint *cancelButtonLeadingConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *chooseButtonBottomConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *chooseButtonTrailingConstraint;
-
+@property (nonatomic) CGRect cropParamsDef;
 @end
 
 @implementation RSKImageCropViewController
@@ -569,6 +569,10 @@ static const CGFloat kLayoutImageScrollViewAnimationDuration = 0.25;
         }
     }
 }
+-(void)applyCropByDefault:(CGRect)cropParams
+{
+    _cropParamsDef = cropParams;
+}
 
 - (void)setMaskPath:(UIBezierPath *)maskPath
 {
@@ -900,6 +904,11 @@ static const CGFloat kLayoutImageScrollViewAnimationDuration = 0.25;
     }
 }
 
+-(void)setDelegate:(id<RSKImageCropViewControllerDelegate>)delegate
+{
+    _delegate = delegate;
+}
+
 - (void)updateMaskPath
 {
     switch (self.cropMode) {
@@ -963,9 +972,9 @@ static const CGFloat kLayoutImageScrollViewAnimationDuration = 0.25;
             CGFloat scale = 1.0 / zoomScale;
             [maskPathCopy applyTransform:CGAffineTransformMakeScale(scale, scale)];
             
-            // 5b: center the mask.
-            CGPoint translation = CGPointMake(-CGRectGetMinX(maskPathCopy.bounds) + (CGRectGetWidth(cropRect) - CGRectGetWidth(maskPathCopy.bounds)) * 0.5f,
-                                              -CGRectGetMinY(maskPathCopy.bounds) + (CGRectGetHeight(cropRect) - CGRectGetHeight(maskPathCopy.bounds)) * 0.5f);
+            // 5b: move the mask to the top-left.
+            CGPoint translation = CGPointMake(-CGRectGetMinX(maskPathCopy.bounds),
+                                              -CGRectGetMinY(maskPathCopy.bounds));
             [maskPathCopy applyTransform:CGAffineTransformMakeTranslation(translation.x, translation.y)];
             
             // 5c: apply the mask.
@@ -1022,6 +1031,7 @@ static const CGFloat kLayoutImageScrollViewAnimationDuration = 0.25;
 
 - (void)cancelCrop
 {
+    NSLog(@"%@", self.delegate);
     if ([self.delegate respondsToSelector:@selector(imageCropViewControllerDidCancelCrop:)]) {
         [self.delegate imageCropViewControllerDidCancelCrop:self];
     }

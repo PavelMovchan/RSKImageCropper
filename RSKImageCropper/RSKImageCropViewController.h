@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, RSKImageCropMode) {
  */
 - (instancetype)initWithImage:(UIImage *)originalImage cropMode:(RSKImageCropMode)cropMode;
 
+-(void)applyCropByDefault:(CGRect)cropParams;
 /**
  Zooms to a specific area of the image so that it is visible.
  
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSUInteger, RSKImageCropMode) {
  
  @discussion A `RSKImageCropViewControllerDelegate` delegate responds to messages sent by completing / canceling crop the image in the image crop view controller.
  */
-@property (weak, nonatomic, nullable) id<RSKImageCropViewControllerDelegate> delegate;
+@property (strong, nonatomic, nullable) id<RSKImageCropViewControllerDelegate> delegate;
 
 /**
  The receiver's data source.
